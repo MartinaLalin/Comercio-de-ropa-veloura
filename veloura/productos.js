@@ -1,6 +1,8 @@
 document.addEventListener('DOMContentLoaded', () => {
   const productosKey = 'productos';
+  const usuariosKey = 'usuarios';
   let editingId = null;
+  let editingUsuarioId = null;
 
   function getProductos() {
     const p = localStorage.getItem(productosKey);
@@ -15,6 +17,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   function saveProductos(arr) {
     localStorage.setItem(productosKey, JSON.stringify(arr));
+  }
+
+  function getUsuarios() {
+    const u = localStorage.getItem(usuariosKey);
+    if (u) return JSON.parse(u);
+    return [
+      {id: 1, nombre: 'admin', rol: 'Administrador', mail: 'admin@veloura.com', contraseña: '1234'}
+    ];
+  }
+
+  function saveUsuarios(arr) {
+    localStorage.setItem(usuariosKey, JSON.stringify(arr));
   }
 
   function formatPrice(num) {
@@ -81,12 +95,39 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
+  function renderUsuariosTable() {
+    const table = document.getElementById('tablaUsuarios');
+    if (!table) return;
+    const tbody = table.querySelector('tbody');
+    const usuarios = getUsuarios();
+
+    tbody.innerHTML = usuarios.map(u => `
+      <tr data-id="${u.id}">
+        <td>${u.nombre}</td>
+        <td>${u.rol}</td>
+        <td>${u.mail}</td>
+        <td>${u.contraseña}</td>
+        <td>
+          <button class="btn-editar-usuario" data-id="${u.id}">Editar</button>
+          <button class="btn-eliminar-usuario" data-id="${u.id}">Eliminar</button>
+        </td>
+      </tr>
+    `).join('');
+  }
+
   function deleteProductoById(id) {
     let productos = getProductos();
     productos = productos.filter(p => p.id !== id);
     saveProductos(productos);
     renderVendedorTable();
     renderProductos();
+  }
+
+  function deleteUsuarioById(id) {
+    let usuarios = getUsuarios();
+    usuarios = usuarios.filter(u => u.id !== id);
+    saveUsuarios(usuarios);
+    renderUsuariosTable();
   }
 
   function setFormToEdit(product) {
@@ -216,6 +257,112 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   }
+
+  function setUsuarioFormToEdit(usuario) {
+    const nombreEl = document.getElementById('usuarioNombre');
+    const rolEl = document.getElementById('usuarioRol');
+    const mailEl = document.getElementById('usuarioMail');
+    const contraseñaEl = document.getElementById('usuarioPassword');
+    const editingEl = document.getElementById('editingUsuarioId');
+    const submitBtn = document.getElementById('submitUsuario');
+
+    if (!nombreEl || !rolEl || !mailEl || !contraseñaEl) return;
+    editingUsuarioId = usuario.id;
+    editingEl.value = usuario.id;
+    nombreEl.value = usuario.nombre || '';
+    rolEl.value = usuario.rol || '';
+    mailEl.value = usuario.mail || '';
+    contraseñaEl.value = usuario.contraseña || '';
+    if (submitBtn) submitBtn.textContent = 'Guardar cambios';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function resetUsuarioForm() {
+    const nombreEl = document.getElementById('usuarioNombre');
+    const rolEl = document.getElementById('usuarioRol');
+    const mailEl = document.getElementById('usuarioMail');
+    const contraseñaEl = document.getElementById('usuarioPassword');
+    const editingEl = document.getElementById('editingUsuarioId');
+    const submitBtn = document.getElementById('submitUsuario');
+
+    if (nombreEl) nombreEl.value = '';
+    if (rolEl) rolEl.value = '';
+    if (mailEl) mailEl.value = '';
+    if (contraseñaEl) contraseñaEl.value = '';
+    if (editingEl) editingEl.value = '';
+    editingUsuarioId = null;
+    if (submitBtn) submitBtn.textContent = 'Agregar usuario';
+  }
+
+  const usuarioForm = document.getElementById('formUsuarioAgregar');
+  if (usuarioForm) {
+    usuarioForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const nombreEl = document.getElementById('usuarioNombre');
+      const rolEl = document.getElementById('usuarioRol');
+      const mailEl = document.getElementById('usuarioMail');
+      const contraseñaEl = document.getElementById('usuarioPassword');
+      const editingEl = document.getElementById('editingUsuarioId');
+
+      const nombre = nombreEl ? nombreEl.value.trim() : '';
+      const rol = rolEl ? rolEl.value.trim() : '';
+      const mail = mailEl ? mailEl.value.trim() : '';
+      const contraseña = contraseñaEl ? contraseñaEl.value.trim() : '';
+
+      if (!nombre || !rol || !mail || !contraseña) {
+        alert('Complete todos los campos del usuario.');
+        return;
+      }
+
+      const usuarios = getUsuarios();
+      if (editingEl && editingEl.value) {
+        const id = parseInt(editingEl.value);
+        const idx = usuarios.findIndex(u => u.id === id);
+        if (idx !== -1) {
+          usuarios[idx].nombre = nombre;
+          usuarios[idx].rol = rol;
+          usuarios[idx].mail = mail;
+          usuarios[idx].contraseña = contraseña;
+          saveUsuarios(usuarios);
+          renderUsuariosTable();
+          resetUsuarioForm();
+          return;
+        }
+      }
+
+      const id = Date.now();
+      usuarios.push({ id, nombre, rol, mail, contraseña });
+      saveUsuarios(usuarios);
+      renderUsuariosTable();
+      resetUsuarioForm();
+    });
+  }
+
+  const usuarioTable = document.getElementById('tablaUsuarios');
+  if (usuarioTable) {
+    usuarioTable.addEventListener('click', (e) => {
+      const btnEdit = e.target.closest('.btn-editar-usuario');
+      if (btnEdit) {
+        const id = parseInt(btnEdit.getAttribute('data-id'));
+        const usuarios = getUsuarios();
+        const usuario = usuarios.find(u => u.id === id);
+        if (usuario) setUsuarioFormToEdit(usuario);
+        return;
+      }
+
+      const btn = e.target.closest('.btn-eliminar-usuario');
+      if (btn) {
+        const id = parseInt(btn.getAttribute('data-id'));
+        if (confirm('¿Eliminar este usuario?')) {
+          deleteUsuarioById(id);
+        }
+      }
+    });
+  }
+
+  renderProductos();
+  renderVendedorTable();
+  renderUsuariosTable();
 
   renderProductos();
   renderVendedorTable();

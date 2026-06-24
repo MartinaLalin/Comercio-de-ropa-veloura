@@ -47,6 +47,7 @@ table {
     border-collapse: collapse;
     margin-top: 15px;
     
+    
 }
 
 th, td {
@@ -54,12 +55,17 @@ th, td {
     padding: 8px;
     text-align: center;
     color: white;
+
+    
 }
 
 th {
     background-color: #474747;
     color: white;
+    padding: 5px;
 }
+
+
 
 form {
     background-color: #fff;
@@ -75,7 +81,8 @@ label {
 
 input {
     width: 100%;
-    padding: 6px;
+    height: 25px;
+    padding: 2px;
     margin-top: 4px;
 }
 

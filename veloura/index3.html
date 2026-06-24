@@ -24,6 +24,44 @@
 
   <main>
     <section>
+      <h2>Gestión de usuarios</h2>
+
+      <form id="formUsuarioAgregar">
+        <input type="hidden" id="editingUsuarioId">
+        <label>Nombre de usuario:</label>
+        <input type="text" id="usuarioNombre" required>
+
+        <label>Rol:</label>
+        <input type="text" id="usuarioRol" required>
+
+        <label>Mail:</label>
+        <input type="email" id="usuarioMail" required>
+
+        <label>Contraseña:</label>
+        <input type="password" id="usuarioPassword" required>
+
+        <button id="submitUsuario" type="submit">Agregar usuario</button>
+      </form>
+    </section>
+
+    <section>
+      <h3>Usuarios añadidos</h3>
+      <table id="tablaUsuarios">
+        <thead>
+          <tr>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th>Mail</th>
+            <th>Contraseña</th>
+            <th>Acciones</th>
+          </tr>
+        </thead>
+        <tbody>
+        </tbody>
+      </table>
+    </section>
+
+ <section>
       <h2>Gestión de Productos</h2>
 
       <form id="formProductoAgregar">
@@ -47,7 +85,7 @@
       </form>
     </section>
 
-    <section>
+     <section>
       <h3>Productos añadidos</h3>
       <table id="tablaProductosVendedor">
         <thead>
