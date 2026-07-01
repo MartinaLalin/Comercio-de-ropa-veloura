@@ -7,7 +7,7 @@ body {
     background-repeat: no-repeat;
     background-attachment: fixed;
     min-height: 100vh; 
-    padding: 0; 
+    padding: 0px; 
     display: flex;
     flex-direction: column;
     
@@ -24,6 +24,11 @@ header {
     padding: 15px;
     text-align: center;
 }
+
+main{
+    padding: 20px;
+}
+
 
 nav a {
     color: white;
@@ -49,10 +54,10 @@ table {
 
 th, td {
     border: 1px solid #ccc;
-    padding: 8px;
+    padding: 4px;
     text-align: center;
     color: white;
-
+    
     
 }
 

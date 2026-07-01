@@ -2,7 +2,7 @@ document.addEventListener('DOMContentLoaded', () => {
   let editingId = null;
   let editingUsuarioId = null;
 
-  // --- GESTIÓN DE LOCALSTORAGE GENÉRICA ---
+  // --- Almacenamiento local sin BD
   const storage = {
     get: (key, defaults) => JSON.parse(localStorage.getItem(key)) || defaults,
     save: (key, data) => localStorage.setItem(key, JSON.stringify(data))
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const formatPrice = (num) => '$' + Number(num).toLocaleString('es-AR');
   const getDisplayPrice = (p) => p.precioFormato || formatPrice(p.precio);
 
-  // --- RENDERS ---
+  // --- dibujado de tablas o cards
   function renderProductos() {
     const container = document.querySelector('.productos-container');
     if (!container) return;
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
     `).join('');
   }
 
-  // Delegación de eventos para el carrito (evita duplicar listeners y clonar botones)
+  // boton Agregar al carrito
   document.addEventListener('click', (e) => {
     if (!e.target.matches('.btn-carrito')) return;
     const btn = e.target;
@@ -56,6 +56,8 @@ document.addEventListener('DOMContentLoaded', () => {
     btn.textContent = '✓ Agregado';
     setTimeout(() => { btn.textContent = 'Agregar al carrito'; }, 1500);
   });
+
+// Rellena la informacion de tablas prods y usuarios.
 
   function renderTable(tableId, data, templateFn) {
     const table = document.getElementById(tableId);
@@ -86,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
     </tr>
   `);
 
-  // --- ACCIONES DE FORMULARIOS REUTILIZABLES ---
+  // Funcionamiento de botones eliminar o editar en admin
   function manageFormFields(fields, values = null, btnId = '', btnTexts = []) {
     fields.forEach(([id, key]) => {
       const el = document.getElementById(id);
@@ -101,7 +103,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const toggleForm = (isEdit, data, fields, btnId, texts) => {
     manageFormFields(fields, isEdit ? data : null, btnId, texts);
-    if (isEdit) window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (isEdit) window.scrollTo({ top: fields[0][0] === 'usuarioNombre' ? 0 : 800, behavior: 'smooth' });
   };
 
   // --- MANEJADORES DE ENTRADAS (SUBMITS Y CRUDS) ---
@@ -154,6 +156,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+
   // Formulario de Usuarios
   document.getElementById('formUsuarioAgregar')?.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -176,7 +179,7 @@ document.addEventListener('DOMContentLoaded', () => {
     editingUsuarioId = null;
   });
 
-  // Tablas Delegadas (Usuarios)
+  // Tablas Usuarios
   document.getElementById('tablaUsuarios')?.addEventListener('click', (e) => {
     const id = parseInt(e.target.closest('button')?.getAttribute('data-id'));
     if (!id) return;
@@ -188,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // --- INICIALIZACIÓN ---
+  // Inicia programa
   renderProductos();
   renderVendedorTable();
   renderUsuariosTable();
